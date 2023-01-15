@@ -1,0 +1,67 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.1.2/dist/chart.umd.min.js"></script>
+	</head>
+	<body>
+		<canvas id="chart" width="800" height="400"></canvas>
+		<script>
+			const ctx = document.getElementById("chart");
+
+			chartIt();
+			async function chartIt() {
+			const data = await getData();
+				new Chart(ctx, {
+					type: "line",
+					data: {
+						labels: data.xs,
+						datasets: [
+							{
+								label:
+									"Combined Land-Surface Air and Sea-Surface Water Temperature Celcius",
+								data: data.ys,
+								fill: false,
+								backgroundColor: "rgba(255, 99, 132, 0.2)",
+								borderColor: "rgb(255, 99, 132)",
+
+								borderWidth: 1,
+							},
+						],
+					},
+					options: {
+						scales: {
+							x: {
+								beginAtZero: true,
+							},
+						},
+					},
+				});
+			}
+
+			async function getData() {
+				const xs = [];
+				const ys = [];
+
+				const response = await fetch("ZonAnn.Ts+dSST.csv");
+				const data = await response.text();
+
+				const table = data.split("\n").slice(1);
+				table.forEach((row) => {
+					const columns = row.split(",");
+					const year = columns[0];
+					xs.push(year);
+					const temp = columns[1];
+					ys.push(parseFloat(temp) + 10);
+					console.log(year, temp);
+				});
+        return {xs, ys};
+			}
+		</script>
+	</body>
+</html>
