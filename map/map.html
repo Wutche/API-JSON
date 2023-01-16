@@ -1,0 +1,67 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+			integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+			crossorigin=""
+		/>
+		<script
+			src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+			integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+			crossorigin=""
+		></script>
+		<style>
+			#issMap {
+				height: 500px;
+			}
+		</style>
+		<title>FETCH JSON FROM API MAP</title>
+	</head>
+	<body>
+		<h1>Where Is the ISS</h1>
+
+		<p
+			>Latitude: <span id="lat"></span> <br />
+			longitude: <span id="lon"></span>
+		</p>
+
+		<div id="issMap"></div>
+
+		<script>
+			const map = L.map("issMap").setView([0, 0], 1);
+			const marker = L.marker([0, 0]).addTo(map);
+			const attribution =
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap Project</a> contributors';
+			const tileUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+			const tiles = L.tileLayer(tileUrl, { attribution });
+			tiles.addTo(map);
+
+			const apiUrl = "https://api.wheretheiss.at/v1/satellites/25544";
+
+			async function getISS() {
+				const response = await fetch(apiUrl);
+				const data = await response.json();
+				const { latitude, longitude } = data;
+        marker.setLatLng(latitude, longitude);
+
+				// L.marker([latitude, longitude]).addTo(map);
+				document.getElementById("lat").textContent = latitude;
+				document.getElementById("lon").textContent = longitude;
+			}
+			getISS();
+
+			// L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+			// 	maxZoom: 19,
+			// 	attribution:
+			// 		'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			// }).addTo(map);
+		</script>
+	</body>
+</html>
